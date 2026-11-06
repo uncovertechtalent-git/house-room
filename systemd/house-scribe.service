@@ -1,0 +1,19 @@
+# User service: the scribe seat (logger). Same install steps as house-llm.service.
+# Writes ~/house-room/log/YYYY-MM-DD.log; needs only HOUSE_IRC_HOST and
+# HOUSE_IRC_PORT from ~/.config/house-room/env.
+[Unit]
+Description=House room seat: scribe (logger)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=%h/.config/house-room/env
+ExecStart=/usr/bin/python3 -u %h/house-room/seats/logger_seat.py
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target

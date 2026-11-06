@@ -1,0 +1,25 @@
+# User service: the local-model seat. Install with:
+#   mkdir -p ~/.config/systemd/user ~/.config/house-room
+#   cp systemd/house-*.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload && systemctl --user enable --now house-llm.service
+# Needs `loginctl enable-linger <user>` so it survives logout and starts at boot.
+#
+# Host values live in ~/.config/house-room/env (not in the repository):
+#   HOUSE_IRC_HOST=...  HOUSE_IRC_PORT=...  HOUSE_LLM_URL=...
+#   HOUSE_LLM_KEY_FILE=~/.config/house-room/llm-api-key  (mode 600)
+[Unit]
+Description=House room seat: local model
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=%h/.config/house-room/env
+ExecStart=/usr/bin/python3 -u %h/house-room/seats/llm_seat.py
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
