@@ -23,12 +23,14 @@ import rails  # noqa: E402
 
 def make_handler(log_dir, channel):
     os.makedirs(log_dir, mode=0o700, exist_ok=True)
+    os.chmod(log_dir, 0o700)  # the room's text is private to the account that runs the scribe
 
     def write(nick, text):
         now = time.gmtime()
         path = os.path.join(log_dir, time.strftime("%Y-%m-%d", now) + ".log")
         stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", now)
-        with open(path, "a", encoding="utf-8") as fh:
+        fd = os.open(path, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o600)
+        with os.fdopen(fd, "a", encoding="utf-8") as fh:
             fh.write(f"{stamp} {nick} {rails.clean(text)}\n")
 
     def handle(client, tags, nick, command, params):
