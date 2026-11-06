@@ -1,0 +1,123 @@
+# Ergo configuration for the house room.
+# Minimal on purpose: every key not set here keeps Ergo's built-in default
+# (accounts off, no operators, no TLS, no languages).
+#
+# Differences from Ergo's shipped default.yaml:
+#   - one plaintext listener, no TLS (next step, see README)
+#   - account registration and channel registration off: nobody needs an
+#     account to join or speak
+#   - no operators, so the server cannot be administered over IRC
+#   - history is in memory (persistent history needs MySQL)
+#   - no replay on join, so a restarted seat never sees old lines again
+
+network:
+    name: house
+
+server:
+    name: irc.house
+    listeners:
+        ":6667":
+    casemapping: "ascii"
+    enforce-utf8: true
+    lookup-hostnames: false
+    forward-confirm-hostnames: false
+    check-ident: false
+    coerce-ident: "~u"
+    motd: /ircd/motd.txt
+    motd-formatting: false
+    idle-timeouts:
+        registration: 60s
+        ping: 1m30s
+        disconnect: 2m30s
+    max-sendq: 96k
+    compatibility:
+        force-trailing: true
+        send-unprefixed-sasl: true
+        allow-truncation: false
+    ip-limits:
+        count: true
+        max-concurrent-connections: 32
+        throttle: true
+        window: 10m
+        max-connections-per-window: 120
+        cidr-len-ipv4: 32
+        cidr-len-ipv6: 64
+        exempted:
+            - "localhost"
+    ip-cloaking:
+        enabled: false
+
+accounts:
+    authentication-enabled: true
+    registration:
+        enabled: false
+    require-sasl:
+        enabled: false
+    nick-reservation:
+        enabled: false
+    default-user-modes: +i
+
+channels:
+    default-modes: +nt
+    max-channels-per-client: 20
+    operator-only-creation: false
+    registration:
+        enabled: false
+    list-delay: 0s
+    invite-expiration: 24h
+
+logging:
+    -
+        method: stderr
+        type: "* -userinput -useroutput"
+        level: info
+
+debug:
+    recover-from-errors: true
+
+lock-file: /ircd/data/ircd.lock
+
+datastore:
+    path: /ircd/data/ircd.db
+    autoupgrade: true
+
+limits:
+    nicklen: 32
+    identlen: 20
+    realnamelen: 150
+    channellen: 64
+    awaylen: 390
+    kicklen: 390
+    topiclen: 390
+    monitor-entries: 100
+    whowas-entries: 100
+    chan-list-modes: 100
+    registration-messages: 1024
+
+fakelag:
+    enabled: true
+    window: 1s
+    burst-limit: 5
+    messages-per-window: 2
+    cooldown: 2s
+    command-budgets:
+        "CHATHISTORY": 16
+        "MONITOR": 1
+        "WHO": 4
+
+history:
+    enabled: true
+    channel-length: 2048
+    client-length: 256
+    autoresize-window: 3d
+    autoreplay-on-join: 0
+    chathistory-maxmessages: 1000
+    znc-maxmessages: 2048
+    restrictions:
+        expire-time: 1w
+        query-cutoff: "none"
+        grace-period: 1h
+    persistent:
+        enabled: false
+    tagmsg-storage:
+        default: false

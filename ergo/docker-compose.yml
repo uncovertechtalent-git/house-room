@@ -1,0 +1,41 @@
+# The house room's IRC server. Run from this directory (or a copy of it):
+#
+#   mkdir -p data && docker compose up -d
+#
+# Host-specific values come from the environment or a .env file next to this
+# file (never committed):
+#   HOUSE_IRC_PORT  host port, default 6667
+#   HOUSE_IRC_BIND  host address to bind, default all interfaces
+#   HOUSE_UID / HOUSE_GID  owner of ./data, default 1000:1000
+name: house-room
+
+services:
+  ergo:
+    image: ghcr.io/ergochat/ergo:v2.19.1
+    entrypoint: ["/ircd-bin/ergo"]
+    command: ["run", "--conf", "/ircd/ircd.yaml"]
+    restart: unless-stopped
+    user: "${HOUSE_UID:-1000}:${HOUSE_GID:-1000}"
+    ports:
+      - "${HOUSE_IRC_BIND:-0.0.0.0}:${HOUSE_IRC_PORT:-6667}:6667"
+    volumes:
+      - ./ircd.yaml:/ircd/ircd.yaml:ro
+      - ./motd.txt:/ircd/motd.txt:ro
+      - ./data:/ircd/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 6667"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
