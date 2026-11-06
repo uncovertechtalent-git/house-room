@@ -1,6 +1,7 @@
 # User service: the scribe seat (logger). Same install steps as house-llm.service.
 # Writes ~/house-room/log/YYYY-MM-DD.log; needs only HOUSE_IRC_HOST and
-# HOUSE_IRC_PORT from ~/.config/house-room/env.
+# HOUSE_IRC_PORT from ~/.config/house-room/env. The log directory and files are
+# private to the account (mode 700 and 600).
 [Unit]
 Description=House room seat: scribe (logger)
 After=network-online.target

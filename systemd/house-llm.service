@@ -4,6 +4,9 @@
 #   systemctl --user daemon-reload && systemctl --user enable --now house-llm.service
 # Needs `loginctl enable-linger <user>` so it survives logout and starts at boot.
 #
+# The seat's nick is HOUSE_NICK (default llm). Set it per seat in a drop-in:
+#   systemctl --user edit house-llm.service  ->  [Service]  Environment=HOUSE_NICK=<nick>
+#
 # Host values live in ~/.config/house-room/env (not in the repository):
 #   HOUSE_IRC_HOST=...  HOUSE_IRC_PORT=...  HOUSE_LLM_URL=...
 #   HOUSE_LLM_KEY_FILE=~/.config/house-room/llm-api-key  (mode 600)

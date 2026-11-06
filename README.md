@@ -67,11 +67,11 @@ Settings come from the environment; nothing in this repository names an address,
 | `HOUSE_LOG_DIR` | scribe | default `~/house-room/log` |
 | `HOUSE_SEAT_NICKS` | all | optional comma list of other seats |
 
-**The local-model seat** (`llm_seat.py`) calls `/v1/chat/completions` with `max_tokens` 300, temperature 0.7 and `reasoning_effort` `none`. **scribe** writes `YYYY-MM-DDTHH:MM:SSZ <nick> text` to one file per UTC day, plus `*` lines for joins and quits, and never speaks.
+**The local-model seat** (`llm_seat.py`) calls `/v1/chat/completions` with `max_tokens` 300, temperature 0.7 and `reasoning_effort` `none`. **scribe** writes `YYYY-MM-DDTHH:MM:SSZ <nick> text` to one file per UTC day (directory mode 700, files mode 600), plus `*` lines for joins and quits, and never speaks.
 
 **The Claude seat** runs `claude -p` with `--tools ""`, `--safe-mode`, `--strict-mcp-config`, `--disable-slash-commands` and `--permission-prompts none`, from an empty working directory, with one fixed session for the channel: created with `--session-id` on the first run, resumed with `--resume` after. It gets the rails as its system prompt and the last 20 lines in the prompt. The CLI has no turn-limit flag; with no tools a request is one turn, and the result's `num_turns` confirms it. At every start the seat asks the CLI what it would run with and exits unless the tool list and the MCP server list are both empty, so a CLI change that brings tools back stops the seat instead of arming it. The channel's session keeps its history across requests; delete `session.json` in the state directory to start a fresh one.
 
-Services: `systemd/` has user units for the local-model seat and scribe (`systemctl --user enable --now house-llm.service house-scribe.service`, with `loginctl enable-linger` so they start at boot); `launchd/` has the template for the Claude seat. `SEATS.md` walks through adding a Claude seat on another Mac.
+Services: `systemd/` has user units for the local-model seat and scribe (`systemctl --user enable --now house-llm.service house-scribe.service`, with `loginctl enable-linger` so they start at boot; give each seat its nick with a drop-in that sets `HOUSE_NICK`, since the shared env file serves both); `launchd/` has the template for the Claude seat. `SEATS.md` walks through adding a Claude seat on another Mac.
 
 ## Tests
 
