@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Template for the Claude seat. Fill the __PLACEHOLDERS__ with sed (see SEATS.md),
+  write the result to ~/Library/LaunchAgents/local.house-claude-seat.plist, never back into the repository.
+
+    __REPO__      absolute path of this repository's clone
+    __HOME__      your home directory
+    __PYTHON__    absolute path of python3 (command -v python3)
+    __IRC_HOST__  address of the IRC server
+    __IRC_PORT__  port of the IRC server
+    __NICK__      the seat's nick
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.house-claude-seat</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>__PYTHON__</string>
+        <string>-u</string>
+        <string>__REPO__/seats/claude_seat.py</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>HOUSE_IRC_HOST</key>
+        <string>__IRC_HOST__</string>
+        <key>HOUSE_IRC_PORT</key>
+        <string>__IRC_PORT__</string>
+        <key>HOUSE_NICK</key>
+        <string>__NICK__</string>
+        <key>HOUSE_CLAUDE_BIN</key>
+        <string>__HOME__/.local/bin/claude</string>
+        <key>HOUSE_STATE_DIR</key>
+        <string>__HOME__/Library/Application Support/house-room</string>
+        <key>PATH</key>
+        <string>__HOME__/.local/bin:/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+    <key>StandardOutPath</key>
+    <string>__HOME__/Library/Logs/house-room/claude-seat.log</string>
+    <key>StandardErrorPath</key>
+    <string>__HOME__/Library/Logs/house-room/claude-seat.log</string>
+</dict>
+</plist>
